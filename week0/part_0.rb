@@ -30,5 +30,5 @@ def sum_to_n?(array, n)
 	else
 		array.combination(2).to_a.each { |x| if sum(x) == n; return true end}
 		false
-	end
+end
 end
