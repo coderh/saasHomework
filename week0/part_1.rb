@@ -1,19 +1,34 @@
-def hello(name)
-  "Hello, " + name
-end
-
-def starts_with_consonant?(s)
-  if s == '' 
-    false
+def sum(array)
+  if array.length == 0
+    0
   else
-    !!(s.downcase =~ /^[b-df-hj-np-tv-z]/)
+    sum = 0
+    for i in array do
+      sum += i
+    end
+    sum
   end
 end
 
-def binary_multiple_of_4?(s)
-  if s !~ /^(0|1)+$/ || s == '0'
+def max_2_sum(array)
+  if array.length == 0
+    0
+  elsif array.length == 1
+    array.first
+  else
+    sort = array.sort! {|x,y| y <=> x }
+    #sort = array.sort!.reverse
+    sort[0]+sort[1]
+  end
+end
+
+def sum_to_n?(array, n)
+  if array.length == 0 && n == 0
+    true
+  elsif array.length == 1
     false
   else
-    s.to_i(2) % 4 == 0
-  end
+    array.combination(2).to_a.each { |x| if sum(x) == n; return true end}
+    false
+end
 end
