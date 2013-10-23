@@ -95,7 +95,3 @@ class OracleOfBacon
     end
   end
 end
-
-orb = OracleOfBacon.new('asdf')
-orb.from = "Jacky Chen"
-orb.make_uri_from_arguments
