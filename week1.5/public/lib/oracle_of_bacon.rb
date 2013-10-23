@@ -42,14 +42,16 @@ class OracleOfBacon
       Net::ProtocolError => e
       # convert all of these into a generic OracleOfBacon::NetworkError,
       #  but keep the original error message
-      # your code here
+      raise OracleOfBacon::NetworkError.new(e)
     end
+      OracleOfBacon::Response.new(xml)
     # your code here: create the OracleOfBacon::Response object
   end
 
   def make_uri_from_arguments
     # your code here: set the @uri attribute to properly-escaped URI
     #   constructed from the @from, @to, @api_key arguments
+    @uri = "http://oracleofbacon.org/cgi-bin/xml?p=#{@api_key}&a=#{CGI.escape(@from)}&b=#{CGI.escape(@to)}"
   end
       
   class Response
@@ -67,12 +69,33 @@ class OracleOfBacon
         parse_error_response
       # your code here: 'elsif' clauses to handle other responses
       # for responses not matching the 3 basic types, the Response
-      # object should have type 'unknown' and data 'unknown response'         
+      # object should have type 'unknown' and data 'unknown response'
+      elsif ! @doc.xpath('/link').empty?
+        parse_graph_response(@doc.xpath('/link'))
+      elsif ! @doc.xpath('/spellcheck').empty?
+        parse_spellcheck_response(@doc.xpath('/spellcheck'))
+      else
+          @type = :unknown
+          @data = 'unknown response type'
       end
     end
     def parse_error_response
       @type = :error
       @data = 'Unauthorized access'
     end
+    def parse_graph_response(tree)
+      @type = :graph
+      actors = tree.xpath('//actor').map{|x| x.text}
+      movies = tree.xpath('//movie').map{|x| x.text}
+      @data = actors.zip(movies).flatten.compact
+    end
+    def parse_spellcheck_response(tree)
+      @type = :spellcheck
+      @data = tree.xpath('//match').map{|x| x.text}
+    end
   end
 end
+
+orb = OracleOfBacon.new('asdf')
+orb.from = "Jacky Chen"
+orb.make_uri_from_arguments
